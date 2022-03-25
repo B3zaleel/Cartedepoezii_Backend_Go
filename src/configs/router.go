@@ -9,54 +9,47 @@ import (
  * Adds all required endpoints to the given engine.
  */
 func AddEndpoints(ginEngine *gin.Engine) {
-	authController := controllers.Authentication{}
-	commentController := controllers.Comment{}
-	connectionController := controllers.Connection{}
-	homeController := controllers.Home{}
-	poemController := controllers.Poem{}
-	searchController := controllers.Search{}
-	userController := controllers.User{}
-	ginEngine.GET("/", homeController.GetHome())
-	ginEngine.GET("/api", homeController.GetHome())
+	ginEngine.GET("/", controllers.GetHome)
+	ginEngine.GET("/api", controllers.GetHome)
 	ginEngine.StaticFile("/favicon", "src/static/Logo.png")
 	ginEngine.StaticFile("/favicon.ico", "src/static/Logo.png")
 	v1 := ginEngine.Group("/api/v1")
 	{
-		v1.GET("/", homeController.GetHome())
-		// v1.GET("/profile-photo", homeController.GetProfilePhoto())
+		v1.GET("/", controllers.GetHome)
+		// v1.GET("/profile-photo", controllers.GetProfilePhoto)
 
-		v1.POST("/sign-in", authController.SignIn())
-		// v1.POST("/sign-up", authController.SignUp())
-		// v1.POST("/reset-password", authController.RequestResetPassword())
-		// v1.PUT("/reset-password", authController.ResetPassword())
+		v1.POST("/sign-in", controllers.SignIn)
+		// v1.POST("/sign-up", controllers.SignUp)
+		// v1.POST("/reset-password", controllers.RequestResetPassword)
+		// v1.PUT("/reset-password", controllers.ResetPassword)
 
-		v1.GET("/comment", commentController.GetComment())
-		// v1.POST("/comment", commentController.AddComment())
-		// v1.DELETE("/comment", commentController.RemoveComment())
-		// v1.GET("/comments-of-poem", commentController.GetPoemComments())
-		// v1.GET("/comment-replies", commentController.GetRepliesToComment())
-		// v1.GET("/comments-by-user", commentController.GetUserComments())
+		v1.GET("/comment", controllers.GetComment)
+		// v1.POST("/comment", controllers.AddComment)
+		// v1.DELETE("/comment", controllers.RemoveComment)
+		// v1.GET("/comments-of-poem", controllers.GetPoemComments)
+		// v1.GET("/comment-replies", controllers.GetRepliesToComment)
+		// v1.GET("/comments-by-user", controllers.GetUserComments)
 
-		// v1.GET("/followers", connectionController.GetFollowers())
-		// v1.GET("/followings", connectionController.GetFollowings())
-		v1.PUT("/follow", connectionController.ChangeConnection())
+		// v1.GET("/followers", controllers.GetFollowers)
+		// v1.GET("/followings", controllers.GetFollowings)
+		v1.PUT("/follow", controllers.ChangeConnection)
 
-		v1.GET("/poem", poemController.GetPoem())
-		// v1.POST("/poem", poemController.AddPoem())
-		// v1.PUT("/poem", poemController.UpdatePoem())
-		// v1.DELETE("/poem", poemController.RemovePoem())
-		// v1.PUT("/like-poem", poemController.ChangePoemReaction())
-		// v1.GET("/poems-user-created", poemController.GetPoemsUserCreated())
-		// v1.GET("/poems-user-likes", poemController.GetPoemsUserLikes())
-		// v1.GET("/poems-channel", poemController.GetPoemsForChannel())
-		// v1.GET("/poems-explore", poemController.GetPoemsToExplore())
+		v1.GET("/poem", controllers.GetPoem)
+		// v1.POST("/poem", controllers.AddPoem)
+		// v1.PUT("/poem", controllers.UpdatePoem)
+		// v1.DELETE("/poem", controllers.RemovePoem)
+		// v1.PUT("/like-poem", controllers.ChangePoemReaction)
+		// v1.GET("/poems-user-created", controllers.GetPoemsUserCreated)
+		// v1.GET("/poems-user-likes", controllers.GetPoemsUserLikes)
+		// v1.GET("/poems-channel", controllers.GetPoemsForChannel)
+		// v1.GET("/poems-explore", controllers.GetPoemsToExplore)
 
-		// v1.GET("/search-poems", searchController.FindPoems())
-		v1.GET("/search-people", searchController.FindPeople())
+		// v1.GET("/search-poems", controllers.FindPoems)
+		v1.GET("/search-people", controllers.FindPeople)
 
-		v1.GET("/user", userController.GetUser())
-		// v1.PUT("/user", userController.UpdateUser())
-		// v1.DELETE("/user", userController.RemoveUser())
+		v1.GET("/user", controllers.GetUser)
+		// v1.PUT("/user", controllers.UpdateUser)
+		// v1.DELETE("/user", controllers.RemoveUser)
 	}
 	ginEngine.NoRoute(func(c *gin.Context) {
 		c.JSON(200, gin.H{"success": false, "message": "Page not found."})
