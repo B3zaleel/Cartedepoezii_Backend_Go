@@ -58,4 +58,10 @@ func AddEndpoints(ginEngine *gin.Engine) {
 		// v1.PUT("/user", userController.UpdateUser())
 		// v1.DELETE("/user", userController.RemoveUser())
 	}
+	ginEngine.NoRoute(func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": false, "message": "Page not found."})
+	})
+	ginEngine.NoMethod(func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": false, "message": "Method not found."})
+	})
 }
