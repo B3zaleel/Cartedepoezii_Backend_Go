@@ -9,8 +9,6 @@ import (
 )
 
 const (
-	// The ISO DateTime layout.
-	LayoutISO = "2022-03-26T04:30:29.988620"
 	// The TTL of an AuthToken
 	AuthTokenDuration = time.Hour * 24 * 30
 )
@@ -40,22 +38,22 @@ func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 		AuthTokenDuration,
 		[]*fernet.Key{key},
 	)
-	err = json.Unmarshal(jsonTxt, obj)
+	err = json.Unmarshal(jsonTxt, &obj)
 	if err != nil {
 		return nil, err
 	}
-	t, err := time.Parse(LayoutISO, obj["expires"])
+	isoTime, err := time.Parse(time.RFC3339, obj["expires"])
 	if err != nil {
 		return nil, err
 	}
-	if currentTime.After(t.UTC()) {
-		return nil, errors.New("Token expired.")
+	if currentTime.After(isoTime.UTC()) {
+		return nil, errors.New("token expired")
 	}
 	authToken = new(AuthToken)
 	authToken.userId = obj["userId"]
 	authToken.email = obj["email"]
 	authToken.secureText = obj["secureText"]
-	authToken.expires = t.UTC()
+	authToken.expires = isoTime.UTC()
 	return authToken, nil
 }
 
@@ -67,7 +65,7 @@ func (authToken *AuthToken) Encode() (token string, err error) {
 	obj["userId"] = authToken.userId
 	obj["email"] = authToken.email
 	obj["secureText"] = authToken.secureText
-	obj["expires"] = currentTime.UTC().Format(LayoutISO)
+	obj["expires"] = currentTime.UTC().Format(time.RFC3339)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
 		return "", err
