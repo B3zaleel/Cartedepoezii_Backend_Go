@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"fernet"
+	fernet "github.com/fernet/fernet-go"
 	"os"
 	"time"
 )
@@ -23,7 +23,7 @@ type AuthToken struct {
 	expires time.Time
 }
 
-// Decodes an authentication string into an AuthToken object.
+// Decodes an authentication token string into an AuthToken object.
 func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 	currentTime := time.Now()
 	obj := make(map[string]string)
@@ -35,7 +35,11 @@ func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 	if err != nil {
 		return nil, err
 	}
-	jsonTxt := fernet.VerifyAndDecrypt(token, AuthTokenDuration, key)
+	jsonTxt := fernet.VerifyAndDecrypt(
+		[]byte(token),
+		AuthTokenDuration,
+		[]*fernet.Key{key},
+	)
 	err = json.Unmarshal(jsonTxt, obj)
 	if err != nil {
 		return nil, err
@@ -55,7 +59,7 @@ func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 	return authToken, nil
 }
 
-// Encodes an AuthToken object to an authentication string.
+// Encodes an AuthToken object to an authentication token string.
 func (authToken *AuthToken) Encode() (token string, err error) {
 	currentTime := time.Now()
 	currentTime.Add(AuthTokenDuration)
@@ -72,9 +76,9 @@ func (authToken *AuthToken) Encode() (token string, err error) {
 	if err != nil {
 		return "", err
 	}
-	token, err = fernet.EncryptAndSign(jsonBytes, key)
+	tok, err := fernet.EncryptAndSign(jsonBytes, key)
 	if err != nil {
 		return "", err
 	}
-	return string(token), nil
+	return string(tok), nil
 }
