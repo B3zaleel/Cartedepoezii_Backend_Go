@@ -15,10 +15,10 @@ const (
 
 // Represents an object for managing user account reset tokens.
 type ResetToken struct {
-	userId string
-	email string
-	message string
-	expires time.Time
+	UserId string
+	Email string
+	Message string
+	Expires time.Time
 }
 
 // Decodes a reset token string into a ResetToken object.
@@ -50,10 +50,10 @@ func (*ResetToken) Decode(token string) (resetToken *ResetToken, err error) {
 		return nil, errors.New("token expired")
 	}
 	resetToken = new(ResetToken)
-	resetToken.userId = obj["userId"]
-	resetToken.email = obj["email"]
-	resetToken.message = obj["message"]
-	resetToken.expires = isoTime.UTC()
+	resetToken.UserId = obj["userId"]
+	resetToken.Email = obj["email"]
+	resetToken.Message = obj["message"]
+	resetToken.Expires = isoTime.UTC()
 	return resetToken, nil
 }
 
@@ -62,9 +62,9 @@ func (resetToken *ResetToken) Encode() (token string, err error) {
 	currentTime := time.Now()
 	currentTime.Add(ResetTokenDuration)
 	obj := make(map[string]string)
-	obj["userId"] = resetToken.userId
-	obj["email"] = resetToken.email
-	obj["message"] = resetToken.message
+	obj["userId"] = resetToken.UserId
+	obj["email"] = resetToken.Email
+	obj["message"] = resetToken.Message
 	obj["expires"] = currentTime.UTC().Format(time.RFC3339)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {

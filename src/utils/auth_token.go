@@ -15,10 +15,10 @@ const (
 
 // Represents an object for managing user authentication tokens.
 type AuthToken struct {
-	userId string
-	email string
-	secureText string
-	expires time.Time
+	UserId string
+	Email string
+	SecureText string
+	Expires time.Time
 }
 
 // Decodes an authentication token string into an AuthToken object.
@@ -50,10 +50,10 @@ func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 		return nil, errors.New("token expired")
 	}
 	authToken = new(AuthToken)
-	authToken.userId = obj["userId"]
-	authToken.email = obj["email"]
-	authToken.secureText = obj["secureText"]
-	authToken.expires = isoTime.UTC()
+	authToken.UserId = obj["userId"]
+	authToken.Email = obj["email"]
+	authToken.SecureText = obj["secureText"]
+	authToken.Expires = isoTime.UTC()
 	return authToken, nil
 }
 
@@ -62,9 +62,9 @@ func (authToken *AuthToken) Encode() (token string, err error) {
 	currentTime := time.Now()
 	currentTime.Add(AuthTokenDuration)
 	obj := make(map[string]string)
-	obj["userId"] = authToken.userId
-	obj["email"] = authToken.email
-	obj["secureText"] = authToken.secureText
+	obj["userId"] = authToken.UserId
+	obj["email"] = authToken.Email
+	obj["secureText"] = authToken.SecureText
 	obj["expires"] = currentTime.UTC().Format(time.RFC3339)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
