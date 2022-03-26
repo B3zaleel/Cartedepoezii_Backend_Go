@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"fernet"
+	fernet "github.com/fernet/fernet-go"
 	"os"
 	"time"
 )
@@ -33,23 +33,27 @@ func (*ResetToken) Decode(token string) (resetToken *ResetToken, err error) {
 	if err != nil {
 		return nil, err
 	}
-	jsonTxt := fernet.VerifyAndDecrypt(token, ResetTokenDuration, key)
-	err = json.Unmarshal(jsonTxt, obj)
+	jsonTxt := fernet.VerifyAndDecrypt(
+		[]byte(token),
+		ResetTokenDuration,
+		[]*fernet.Key{key},
+	)
+	err = json.Unmarshal(jsonTxt, &obj)
 	if err != nil {
 		return nil, err
 	}
-	t, err := time.Parse(LayoutISO, obj["expires"])
+	isoTime, err := time.Parse(time.RFC3339, obj["expires"])
 	if err != nil {
 		return nil, err
 	}
-	if currentTime.After(t.UTC()) {
-		return nil, errors.New("Token expired.")
+	if currentTime.After(isoTime.UTC()) {
+		return nil, errors.New("token expired")
 	}
 	resetToken = new(ResetToken)
 	resetToken.userId = obj["userId"]
 	resetToken.email = obj["email"]
 	resetToken.message = obj["message"]
-	resetToken.expires = t.UTC()
+	resetToken.expires = isoTime.UTC()
 	return resetToken, nil
 }
 
@@ -61,7 +65,7 @@ func (resetToken *ResetToken) Encode() (token string, err error) {
 	obj["userId"] = resetToken.userId
 	obj["email"] = resetToken.email
 	obj["message"] = resetToken.message
-	obj["expires"] = currentTime.UTC().Format(LayoutISO)
+	obj["expires"] = currentTime.UTC().Format(time.RFC3339)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
 		return "", err
@@ -70,9 +74,9 @@ func (resetToken *ResetToken) Encode() (token string, err error) {
 	if err != nil {
 		return "", err
 	}
-	token, err = fernet.EncryptAndSign(jsonBytes, key)
+	tok, err := fernet.EncryptAndSign(jsonBytes, key)
 	if err != nil {
 		return "", err
 	}
-	return string(token), nil
+	return string(tok), nil
 }
