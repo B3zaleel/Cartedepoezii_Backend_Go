@@ -23,12 +23,6 @@ type AuthToken struct {
 	expires time.Time
 }
 
-// Checks if the current token has expired.
-func (authToken *AuthToken) IsExpired() bool {
-	currentTime := time.Now()
-	return currentTime.After(authToken.expires)
-}
-
 // Decodes an authentication string into an AuthToken object.
 func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 	currentTime := time.Now()
