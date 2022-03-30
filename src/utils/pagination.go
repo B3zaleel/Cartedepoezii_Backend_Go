@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // Represents an item of a page.
@@ -81,4 +83,22 @@ func ExtractPage(items []Item, pageSpec PageSpec) ([]Item, error) {
 		}
 	}
 	return items[start:end], nil
+}
+
+// Retrieves a page spec from a gin Context.
+func GetPageSpec(c *gin.Context, popTop bool) (page *PageSpec, err error) {
+	after := c.DefaultQuery("after", "")
+	before := c.DefaultQuery("before", "")
+	spanStr := c.DefaultQuery("span", "12")
+	span, err := strconv.ParseUint(spanStr, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+	page = &PageSpec{
+		After: after,
+		Before: before,
+		Span: int(span),
+		PopTop: popTop,
+	}
+	return page, nil
 }
