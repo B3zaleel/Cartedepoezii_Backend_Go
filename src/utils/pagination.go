@@ -9,11 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Represents an item of a page.
-type Item struct {
-	id string;
-}
-
 // Represents a page of items
 type PageSpec struct {
 	Span int
@@ -22,7 +17,7 @@ type PageSpec struct {
 }
 
 // Retrieves a section of a list of items with a given span.
-func RangeSlicer(span string, items []Item) ([]Item, error) {
+func RangeSlicer(span string, items []interface{}) ([]interface{}, error) {
 	valid_span, err := regexp.MatchString("\\d+(,\\d+)?", span)
 	if !valid_span {
 		return nil, err
@@ -42,14 +37,18 @@ func RangeSlicer(span string, items []Item) ([]Item, error) {
 }
 
 // Extracts a section of a data list based on anchors.
-func ExtractPage(items []Item, pageSpec PageSpec) ([]Item, error) {
+func ExtractPage(
+	items []interface{},
+	pageSpec PageSpec,
+	getItemId func (item interface{}) (string),
+	) ([]interface{}, error) {
 	start := 0
 	end := 0
 	if len(pageSpec.After) > 0 && len(pageSpec.Before) > 0 {
 		return nil, errors.New("Only one page anchor needed.")
 	} else if len(pageSpec.After) > 0 {
 		for i := 0; i < len(items); i++ {
-			if items[i].id == pageSpec.After {
+			if getItemId(items[i]) == pageSpec.After {
 				start = i + 1
 				break
 			}
@@ -60,7 +59,7 @@ func ExtractPage(items []Item, pageSpec PageSpec) ([]Item, error) {
 		}
 	} else if len(pageSpec.Before) > 0 {
 		for i := 0; i < len(items); i++ {
-			if items[i].id == pageSpec.Before {
+			if getItemId(items[i]) == pageSpec.Before {
 				end = i + 1
 				break
 			}
