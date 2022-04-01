@@ -175,7 +175,7 @@ func ChangeConnection(c *gin.Context) {
 		jsonBody.UserId,
 		jsonBody.FollowId,
 	)
-	if err != nil {
+	if err == nil {
 		// userFollowing exists -> remove connection
 		tx, err := db.Begin()
 		if err != nil {
