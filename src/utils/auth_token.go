@@ -22,7 +22,7 @@ type AuthToken struct {
 }
 
 // Decodes an authentication token string into an AuthToken object.
-func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
+func DecodeAuthToken(token string) (authToken *AuthToken, err error) {
 	currentTime := time.Now()
 	obj := make(map[string]string)
 	obj["userId"] = ""
@@ -58,7 +58,7 @@ func (*AuthToken) Decode(token string) (authToken *AuthToken, err error) {
 }
 
 // Encodes an AuthToken object to an authentication token string.
-func (authToken *AuthToken) Encode() (token string, err error) {
+func EncodeAuthToken(authToken *AuthToken) (token string, err error) {
 	currentTime := time.Now()
 	currentTime.Add(AuthTokenDuration)
 	obj := make(map[string]string)
