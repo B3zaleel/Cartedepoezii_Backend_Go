@@ -19,4 +19,5 @@ type UserMin struct {
 	Id             string `json:"id"`
 	Name           string `json:"name"`
 	ProfilePhotoId string `json:"profilePhotoId"`
+	IsFollowing    bool   `json:"isFollowing"`
 }
