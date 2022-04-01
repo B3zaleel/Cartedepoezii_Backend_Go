@@ -7,7 +7,14 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/B3zaleel/Cartedepoezii_Backend_Go/src/db_models"
 )
+
+// Represents an item of a page.
+type Item interface {
+	db_models.User | db_models.Poem | db_models.Comment | db_models.UserFollowing | db_models.PoemLike;
+	GetId() string
+}
 
 // Represents a page of items
 type PageSpec struct {
@@ -17,7 +24,7 @@ type PageSpec struct {
 }
 
 // Retrieves a section of a list of items with a given span.
-func RangeSlicer(span string, items []interface{}) ([]interface{}, error) {
+func RangeSlicer[I Item](span string, items []I) ([]I, error) {
 	valid_span, err := regexp.MatchString("\\d+(,\\d+)?", span)
 	if !valid_span {
 		return nil, err
@@ -37,18 +44,14 @@ func RangeSlicer(span string, items []interface{}) ([]interface{}, error) {
 }
 
 // Extracts a section of a data list based on anchors.
-func ExtractPage(
-	items []interface{},
-	pageSpec PageSpec,
-	getItemId func (item interface{}) (string),
-	) ([]interface{}, error) {
+func ExtractPage[I Item](items []I, pageSpec PageSpec) ([]I, error) {
 	start := 0
 	end := 0
 	if len(pageSpec.After) > 0 && len(pageSpec.Before) > 0 {
 		return nil, errors.New("Only one page anchor needed.")
 	} else if len(pageSpec.After) > 0 {
 		for i := 0; i < len(items); i++ {
-			if getItemId(items[i]) == pageSpec.After {
+			if items[i].GetId() == pageSpec.After {
 				start = i + 1
 				break
 			}
@@ -59,7 +62,7 @@ func ExtractPage(
 		}
 	} else if len(pageSpec.Before) > 0 {
 		for i := 0; i < len(items); i++ {
-			if getItemId(items[i]) == pageSpec.Before {
+			if items[i].GetId() == pageSpec.Before {
 				end = i + 1
 				break
 			}
