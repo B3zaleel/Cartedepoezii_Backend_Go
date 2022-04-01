@@ -168,9 +168,9 @@ func ChangeConnection(c *gin.Context) {
 		c.JSON(200, gin.H{"success": false, "message": "User id and auth token are a mismatch."})
 		return
 	}
-	userFollowing := db_models.UserFollowing{}
+	userFollowing := &db_models.UserFollowing{}
 	err = db.Get(
-		&userFollowing,
+		userFollowing,
 		"SELECT * FROM users_followings WHERE follower_id=$1 AND following_id=$2;",
 		jsonBody.UserId,
 		jsonBody.FollowId,
@@ -207,7 +207,7 @@ func ChangeConnection(c *gin.Context) {
 		// userFollowing doesn't exist -> create connection
 		currentTime := time.Now().UTC()
 		connectionId := uuid.New().String()
-		user_following := &db_models.UserFollowing{
+		newUserFollowing := &db_models.UserFollowing{
 			Id:          connectionId,
 			FollowerId:  jsonBody.UserId,
 			FollowingId: jsonBody.FollowId,
@@ -221,10 +221,10 @@ func ChangeConnection(c *gin.Context) {
 		_, err = tx.Exec(
 			`INSERT INTO users_followings (id, follower_id, following_id, created_on)
 			VALUES ($1, $2, $3, $4);`,
-			user_following.Id,
-			user_following.FollowerId,
-			user_following.FollowingId,
-			user_following.CreatedOn,
+			newUserFollowing.Id,
+			newUserFollowing.FollowerId,
+			newUserFollowing.FollowingId,
+			newUserFollowing.CreatedOn,
 		)
 		if err != nil {
 			c.JSON(200, gin.H{"success": false, "message": err.Error()})
