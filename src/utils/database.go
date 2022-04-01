@@ -3,14 +3,15 @@ package utils
 import (
 	"os"
 	"log"
-	"database/sql"
+	_ "database/sql"
 
 	_ "github.com/lib/pq"
+	"github.com/jmoiron/sqlx"
 )
 
 // Creates a database connection.
-func GetDBConnection() (db *sql.DB, err error) {
-	db, err = sql.Open("postgres", os.Getenv("DB_URL"))
+func GetDBConnection() (db *sqlx.DB, err error) {
+	db, err = sqlx.Open("postgres", os.Getenv("DB_URL"))
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
