@@ -73,6 +73,10 @@ func AddComment(c *gin.Context) {
 		c.JSON(200, gin.H{"success": false, "message": err.Error()})
 		return
 	}
+	if jsonBody.UserId != authToken.UserId {
+		c.JSON(200, gin.H{"success": false, "message": "User id and auth token are a mismatch."})
+		return
+	}
 	currentTime := time.Now().UTC()
 	commentId := uuid.New().String()
 	comment := &db_models.Comment{
@@ -163,6 +167,10 @@ func RemoveComment(c *gin.Context) {
 	authToken, err := utils.DecodeAuthToken(jsonBody.AuthToken)
 	if err != nil {
 		c.JSON(200, gin.H{"success": false, "message": err.Error()})
+		return
+	}
+	if jsonBody.UserId != authToken.UserId {
+		c.JSON(200, gin.H{"success": false, "message": "User id and auth token are a mismatch."})
 		return
 	}
 	comment := &db_models.Comment{}
