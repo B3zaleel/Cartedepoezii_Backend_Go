@@ -91,16 +91,18 @@ func AddComment(c *gin.Context) {
 		c.JSON(200, gin.H{"success": false, "message": "Name is too long."})
 		return
 	}
-	user := &db_models.User{}
-	err = db.Get(
-		user,
-		"SELECT * FROM comments WHERE id=$1 AND poem_id=$2;",
-		jsonBody.ReplyTo,
-		jsonBody.PoemId,
-	)
-	if err != nil {
-		c.JSON(200, gin.H{"success": false, "message": "Failed to find comment creator."})
-		return
+	if len(jsonBody.ReplyTo) > 0 {
+		parentComment := &db_models.Comment{}
+		err = db.Get(
+			parentComment,
+			"SELECT * FROM comments WHERE id=$1 AND poem_id=$2;",
+			jsonBody.ReplyTo,
+			jsonBody.PoemId,
+		)
+		if err != nil {
+			c.JSON(200, gin.H{"success": false, "message": "Failed to find comment being replied to."})
+			return
+		}
 	}
 	poem := &db_models.Poem{}
 	err = db.Get(
