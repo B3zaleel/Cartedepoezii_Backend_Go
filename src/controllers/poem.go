@@ -522,7 +522,7 @@ func GetPoemsUserCreated(c *gin.Context) {
 			isLiked = err == nil
 		}
 		verses := []string{}
-		err = json.Unmarshal([]byte(pagePoems[i].Text), verses)
+		err = json.Unmarshal([]byte(pagePoems[i].Text), &verses)
 		if err != nil {
 			c.JSON(200, gin.H{"success": false, "message": err.Error()})
 			return
@@ -626,7 +626,7 @@ func GetPoemsUserLikes(c *gin.Context) {
 			isLiked = err == nil
 		}
 		verses := []string{}
-		err = json.Unmarshal([]byte(poem.Text), verses)
+		err = json.Unmarshal([]byte(poem.Text), &verses)
 		if err != nil {
 			c.JSON(200, gin.H{"success": false, "message": err.Error()})
 			return
@@ -768,7 +768,7 @@ func GetPoemsForChannel(c *gin.Context) {
 			isLiked = err == nil
 		}
 		verses := []string{}
-		err = json.Unmarshal([]byte(pagePoems[i].Text), verses)
+		err = json.Unmarshal([]byte(pagePoems[i].Text), &verses)
 		if err != nil {
 			c.JSON(200, gin.H{"success": false, "message": err.Error()})
 			return
@@ -793,7 +793,7 @@ func GetPoemsForChannel(c *gin.Context) {
 	)
 }
 
-// TODO: Retrieves poems a user can explore.
+// Retrieves poems a user can explore.
 func GetPoemsToExplore(c *gin.Context) {
 	pageSpec, err := utils.GetPageSpec(c, true)
 	if err != nil {
@@ -868,7 +868,7 @@ func GetPoemsToExplore(c *gin.Context) {
 			isLiked = err == nil
 		}
 		verses := []string{}
-		err = json.Unmarshal([]byte(pagePoem.Text), verses)
+		err = json.Unmarshal([]byte(pagePoem.Text), &verses)
 		if err != nil {
 			c.JSON(200, gin.H{"success": false, "message": err.Error()})
 			return
