@@ -806,19 +806,17 @@ func GetPoemsToExplore(c *gin.Context) {
 		c.JSON(200, gin.H{"success": false, "message": err.Error()})
 		return
 	}
-	userFollowingIds := []string{}
+	userId := ""
 	if authToken != nil {
-		err = db.Select(
-			&userFollowingIds,
-			"SELECT following_id FROM users_followings WHERE follower_id=$1;",
-			authToken.UserId,
-		)
+		userId = authToken.UserId
 	}
 	poems := []db_models.Poem{}
 	err = db.Select(
 		&poems,
-		"SELECT * FROM poems WHERE user_id NOT IN ($1) LIMIT $2;",
-		userFollowingIds,
+		`SELECT * FROM poems WHERE user_id NOT IN
+			(SELECT following_id FROM users_followings WHERE follower_id=$1;)
+			LIMIT $2;`,
+		userId,
 		MAX_EXPLORE_PAGE_POEMS,
 	)
 	if err != nil {
