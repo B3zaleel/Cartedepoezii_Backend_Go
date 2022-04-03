@@ -174,7 +174,7 @@ func UpdateUser(c *gin.Context) {
 			jsonBody.ProfilePhoto,
 			strings.ReplaceAll(user.Id, "-", ""),
 			&imagekit.FileOptions{
-				Folder: &destFolder,
+				Folder:        &destFolder,
 				IsPrivateFile: &isPrivateFile,
 			},
 		)
