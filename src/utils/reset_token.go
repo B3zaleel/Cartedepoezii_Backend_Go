@@ -22,7 +22,7 @@ type ResetToken struct {
 }
 
 // Decodes a reset token string into a ResetToken object.
-func (*ResetToken) Decode(token string) (resetToken *ResetToken, err error) {
+func DecodeResetToken(token string) (resetToken *ResetToken, err error) {
 	currentTime := time.Now()
 	obj := make(map[string]string)
 	obj["userId"] = ""
@@ -58,7 +58,7 @@ func (*ResetToken) Decode(token string) (resetToken *ResetToken, err error) {
 }
 
 // Encodes a ResetToken object to a reset token string.
-func (resetToken *ResetToken) Encode() (token string, err error) {
+func EncodeResetToken(resetToken *ResetToken) (token string, err error) {
 	currentTime := time.Now()
 	currentTime.Add(ResetTokenDuration)
 	obj := make(map[string]string)
