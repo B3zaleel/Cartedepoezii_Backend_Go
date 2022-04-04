@@ -37,7 +37,8 @@ The required environment variables should be stored in a file named `.env` and e
 + Install the Go packages using `go get github.com/B3zaleel/Cartedepoezii_Backend_Go`.
 + Start the database service using `sudo service postgresql start`.
 + Open an interactive shell with the `postgres` user by running `sudo -s -u postgres`.
-+ Run `psql -f data/DBSetup.sql` to initialize the database in the interactive shell.
++ Run `psql -f data/DBSetup.sql` to initialize the database in the interactive shell and exit.
++ Open an interactive shell with the `cartedepoezii_dev` user by running `sudo -s -u cartedepoezii_dev`. Remember to add the `cartedepoezii_dev` user (if it doesn't exist) before running this command.
 + Run `psql -f src/db/DBInit.sql -d cartedepoezii_dev_db` to initialize the database entitites and exit.
 
 ## Usage
